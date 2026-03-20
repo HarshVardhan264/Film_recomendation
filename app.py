@@ -3,13 +3,22 @@ import pickle
 import pandas as pd
 
 def recommend(movie):
+    if movie not in movies['title'].values:
+        return ["Movie not found"]
+
     movie_index = movies[movies['title'] == movie].index[0]
-    distances =similarity[movie_index]
-    movies_list = sorted(list(enumerate(distances)), reverse=True, key =lambda x: x[1])[1:6]
+    distances = similarity[movie_index]
+    
+    movies_list = sorted(
+        list(enumerate(distances)),
+        reverse=True,
+        key=lambda x: x[1]
+    )[1:6]
 
     recommended_movies = []
     for i in movies_list:
         recommended_movies.append(movies.iloc[i[0]].title)
+
     return recommended_movies
 
 
@@ -28,8 +37,11 @@ selected_movie_name = st.selectbox(
 )
 
 if st.button('Recommend'):
-    recommendations = recommend(selected_movie_name)
-    for i in recommendations:
-        st.write(i)
+    try:
+        recommendations = recommend(selected_movie_name)
+        for i in recommendations:
+            st.write(i)
+    except Exception as e:
+        st.error(f"Error: {e}")
 
     
